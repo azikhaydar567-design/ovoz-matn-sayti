@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Studio Ultimate - Professional Generator & Scanner</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- QRCode.js va HTML5-QRCode (Skaner uchun) kutubxonalari -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+  <div class="background-glow"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fa-solid fa-qrcode"></i>
+        <span>QR Studio Ultimate</span>
+      </div>
+      <p class="subtitle">Havola, Wi-Fi, vCard Kontakt, Fayllar va Skanerlash — barchasi bir joyda!</p>
+    </header>
+
+    <main class="card">
+      <div class="input-section">
+        <label><i class="fa-solid fa-layer-group"></i> Bo'limni Tanlang:</label>
+        
+        <!-- Asosiy menyu (Generator va Skaner) -->
+        <div class="main-mode-selector">
+          <button class="mode-btn active" data-mode="generator"><i class="fa-solid fa-wand-magic-sparkles"></i> Yaratish</button>
+          <button class="mode-btn" data-mode="scanner"><i class="fa-solid fa-camera"></i> Skanerlash</button>
+        </div>
+
+        <!-- GENERATOR QISMI -->
+        <div id="generator-view" class="view-section">
+          <div class="type-selector">
+            <button class="type-btn active" data-type="text">Havola</button>
+            <button class="type-btn" data-type="wifi">Wi-Fi</button>
+            <button class="type-btn" data-type="vcard">vCard</button>
+            <button class="type-btn" data-type="file">Fayl</button>
+          </div>
+
+          <!-- 1. Havola -->
+          <div id="text-input-group" class="input-group">
+            <div class="input-wrapper">
+              <input type="text" id="text-input" placeholder="https://t.me/kanal_nomi" autocomplete="off">
+              <button id="clear-btn" class="hidden"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+
+          <!-- 2. Wi-Fi -->
+          <div id="wifi-input-group" class="input-group hidden">
+            <div class="wifi-fields">
+              <input type="text" id="wifi-ssid" placeholder="Tarmoq nomi (SSID)">
+              <input type="text" id="wifi-pass" placeholder="Parol">
+              <select id="wifi-type">
+                <option value="WPA">WPA/WPA2</option>
+                <option value="nopass">Ochiq tarmoq</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 3. vCard (Kontakt) -->
+          <div id="vcard-input-group" class="input-group hidden">
+            <div class="vcard-fields">
+              <input type="text" id="vc-name" placeholder="Ism va Familiya">
+              <input type="text" id="vc-phone" placeholder="Telefon raqam (+998...)">
+              <input type="email" id="vc-email" placeholder="Elektron pochta">
+              <input type="text" id="vc-org" placeholder="Ish joyi / Kompaniya">
+            </div>
+          </div>
+
+          <!-- 4. Fayl yuklash -->
+          <div id="file-input-group" class="input-group hidden">
+            <div class="file-drop-zone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <p>Faylni yuklang (Word, Excel, PDF)</p>
+              <span id="file-name-display" class="file-name">Hali fayl tanlanmadi</span>
+              <input type="file" id="file-input" accept=".docx, .xlsx, .pdf, .txt">
+            </div>
+          </div>
+
+          <!-- Qo'shimcha sozlamalar (Logotip va ranglar) -->
+          <div class="extra-options">
+            <div class="logo-upload">
+              <label for="logo-input"><i class="fa-solid fa-image"></i> Markazga logotip:</label>
+              <input type="file" id="logo-input" accept="image/*">
+            </div>
+            <div class="colors-row">
+              <div class="color-picker">
+                <label>QR Rangi:</label>
+                <input type="color" id="color-dark" value="#000000">
+              </div>
+              <div class="color-picker">
+                <label>Fon:</label>
+                <input type="color" id="color-light" value="#ffffff">
+              </div>
+            </div>
+          </div>
+
+          <button id="generate-btn">
+            <i class="fa-solid fa-qrcode"></i> QR Kod Yaratish
+          </button>
+        </div>
+
+        <!-- SKANER QISMI -->
+        <div id="scanner-view" class="view-section hidden">
+          <div id="reader"></div>
+          <div id="scan-result" class="scan-result hidden">
+            <p>Skaner natijasi:</p>
+            <a id="scan-result-link" href="#" target="_blank"></a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Natija qismi -->
+      <div class="output-section">
+        <div id="qr-box" class="qr-box">
+          <div id="placeholder-text">
+            <i class="fa-solid fa-qrcode placeholder-icon"></i>
+            <p>QR kodingiz shu yerda chiqadi</p>
+          </div>
+          <div id="qrcode"></div>
+        </div>
+
+        <div id="action-buttons" class="action-buttons hidden">
+          <button id="download-png" class="btn btn-secondary"><i class="fa-solid fa-download"></i> PNG</button>
+          <button id="download-svg" class="btn btn-secondary"><i class="fa-solid fa-file-code"></i> SVG</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tarix bo'limi -->
+    <section class="history-section">
+      <div class="history-header">
+        <h3><i class="fa-solid fa-clock-rotate-left"></i> Tarix</h3>
+        <button id="clear-history" class="clear-history-btn"><i class="fa-solid fa-trash"></i> Tozalash</button>
+      </div>
+      <div id="history-list" class="history-list">
+        <p class="empty-history">Hozircha tarix bo'sh.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 QR Studio Ultimate.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
